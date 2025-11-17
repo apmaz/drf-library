@@ -19,6 +19,9 @@ class Borrow(models.Model):
         related_name="borrows_user"
     )
 
+    def decrease_one_from_borrow_book_inventory(self):
+        self.book.decrease_one_from_inventory()
+
     def clean(self):
         super().clean()
         if self.borrow_date >= self.expected_return_date:
@@ -28,6 +31,7 @@ class Borrow(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        self.decrease_one_from_borrow_book_inventory()
         return super().save(*args, **kwargs)
 
     def __str__(self):
