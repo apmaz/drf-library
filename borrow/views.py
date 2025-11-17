@@ -1,3 +1,24 @@
-from django.shortcuts import render
+from rest_framework import mixins
+from rest_framework.viewsets import GenericViewSet
+from borrow.models import Borrow
+from borrow.serializers import (
+    BorrowListSerializer,
+    BorrowRetrieveSerializer,
+    BorrowSerializer
+)
 
-# Create your views here.
+
+class BorrowViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    GenericViewSet,
+):
+    queryset = Borrow.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return BorrowListSerializer
+        if self.action == "retrieve":
+            return BorrowRetrieveSerializer
+        return BorrowSerializer
