@@ -1,6 +1,8 @@
 from rest_framework import mixins
+from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import GenericViewSet
 from borrow.models import Borrow
+from borrow.permissions import IsAdminOrAllowAnyReadOnly
 from borrow.serializers import (
     BorrowListSerializer,
     BorrowRetrieveSerializer,
@@ -15,6 +17,7 @@ class BorrowViewSet(
     GenericViewSet,
 ):
     queryset = Borrow.objects.all()
+    permission_classes = (IsAdminOrAllowAnyReadOnly,)
 
     def get_serializer_class(self):
         if self.action == "list":
