@@ -18,6 +18,7 @@ class Borrow(models.Model):
         on_delete=models.CASCADE,
         related_name="borrows_user"
     )
+    is_active = models.BooleanField(default=True)
 
     def decrease_one_from_borrow_book_inventory(self):
         self.book.decrease_one_from_inventory()
