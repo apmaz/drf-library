@@ -20,6 +20,7 @@ class BorrowListSerializer(serializers.ModelSerializer):
             "actual_return_date",
             "book",
             "user",
+            "is_active",
         )
 
 
@@ -36,6 +37,7 @@ class BorrowRetrieveSerializer(serializers.ModelSerializer):
             "actual_return_date",
             "book",
             "user",
+            "is_active",
         )
 
 
