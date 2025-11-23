@@ -1,12 +1,15 @@
-from rest_framework import mixins
+from rest_framework import mixins, status
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from borrow.models import Borrow
 from borrow.serializers import (
     BorrowListSerializer,
     BorrowRetrieveSerializer,
-    BorrowSerializer
+    BorrowSerializer,
+    BorrowReturnSerializer,
 )
 
 
@@ -72,7 +75,23 @@ class BorrowViewSet(
             return BorrowListSerializer
         if self.action == "retrieve":
             return BorrowRetrieveSerializer
+        if self.action == "return_of_borrow":
+            return BorrowReturnSerializer
         return BorrowSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(
+        methods=["POST",],
+        detail=True,
+        url_path="return"
+    )
+    def return_of_borrow(self, request, pk=None):
+        borrow = self.get_object()
+        serializer = self.get_serializer(borrow, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
