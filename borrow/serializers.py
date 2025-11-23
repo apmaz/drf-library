@@ -48,9 +48,20 @@ class BorrowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Borrow
         fields = (
+            "id",
             "borrow_date",
             "expected_return_date",
+            "actual_return_date",
             "book",
+            "user",
+            "is_active",
+        )
+
+        read_only_fields = (
+            "id",
+            "actual_return_date",
+            "user",
+            "is_active",
         )
 
     def create(self, validated_data):
