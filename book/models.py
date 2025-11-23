@@ -14,7 +14,7 @@ class Book(models.Model):
     inventory = models.IntegerField(validators=[MinValueValidator(0)])
     daily_fee = models.DecimalField(max_digits=6, decimal_places=3)
 
-    def decrease_one_from_inventory(self):
+    def decrease_on_1_for_inventory(self):
         if self.inventory == 0:
             raise ValidationError("The inventory of this book is 0")
         self.inventory -= 1
