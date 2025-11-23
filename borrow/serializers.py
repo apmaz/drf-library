@@ -51,3 +51,8 @@ class BorrowSerializer(serializers.ModelSerializer):
             "actual_return_date",
             "book",
         )
+
+    def create(self, validated_data):
+        book = validated_data["book"]
+        book.decrease_on_1_for_inventory()
+        return Borrow.objects.create(**validated_data)
