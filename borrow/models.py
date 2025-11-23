@@ -32,7 +32,6 @@ class Borrow(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        self.decrease_one_from_borrow_book_inventory()
         return super().save(*args, **kwargs)
 
     def __str__(self):
