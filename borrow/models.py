@@ -20,9 +20,6 @@ class Borrow(models.Model):
     )
     is_active = models.BooleanField(default=True)
 
-    def decrease_one_from_borrow_book_inventory(self):
-        self.book.decrease_one_from_inventory()
-
     def clean(self):
         super().clean()
         if self.borrow_date >= self.expected_return_date:
