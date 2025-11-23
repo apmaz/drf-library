@@ -20,6 +20,10 @@ class Book(models.Model):
         self.inventory -= 1
         self.save()
 
+    def increase_on_1_for_inventory(self):
+        self.inventory += 1
+        self.save()
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
