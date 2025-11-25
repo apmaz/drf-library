@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "user",
     "borrow",
     "notifications",
+    "payments",
 ]
 
 AUTH_USER_MODEL = "user.User"
