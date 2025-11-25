@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "book",
     "user",
     "borrow",
+    "notifications",
 ]
 
 AUTH_USER_MODEL = "user.User"
