@@ -13,3 +13,4 @@ platformdirs==4.5.0
 PyJWT==2.10.1
 pytokens==0.3.0
 sqlparse==0.5.3
+python-dotenv==1.2.1
