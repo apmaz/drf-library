@@ -27,6 +27,4 @@ class PaymentViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return PaymentListSerializer
-        if self.action == "retrieve":
-            return PaymentRetrieveSerializer
-        return PaymentListSerializer
+        return PaymentRetrieveSerializer
