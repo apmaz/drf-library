@@ -16,7 +16,7 @@ def create_checkout_session(instance: Borrow) -> str:
                     "product_data": {
                         "name": f"{instance.book.title} by {instance.book.author}",
                     },
-                    "unit_amount": sum_to_pay,
+                    "unit_amount": sum_to_pay * 100,
                 },
                 "quantity": 1,
             }
