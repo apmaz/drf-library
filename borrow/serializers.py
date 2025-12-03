@@ -1,9 +1,11 @@
 from datetime import datetime
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from borrow.models import Borrow
 from book.serializers import BookSerializer
 from notifications.telegram_services import send_borrow_created_message
+from payments.payment_services import create_checkout_session
 from user.serializers import UserSerializer
 
 
@@ -68,8 +70,10 @@ class BorrowSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         book = validated_data["book"]
         book.decrease_on_1_for_inventory()
-        instance = Borrow.objects.create(**validated_data)
-        send_borrow_created_message(instance)
+        with transaction.atomic():
+            instance = Borrow.objects.create(**validated_data)
+            send_borrow_created_message(instance)
+            create_checkout_session(instance)
         return instance
 
 
