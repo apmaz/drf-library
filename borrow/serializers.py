@@ -7,6 +7,7 @@ from book.serializers import BookSerializer
 from notifications.telegram_services import send_borrow_created_message
 from payments.payment_services import create_checkout_session
 from user.serializers import UserSerializer
+from payments.serializers import PaymentListSerializer, PaymentShortSerializer
 
 
 class BorrowListSerializer(serializers.ModelSerializer):
@@ -15,6 +16,7 @@ class BorrowListSerializer(serializers.ModelSerializer):
         slug_field="email",
         read_only=True,
     )
+    payments = PaymentShortSerializer(read_only=True, many=True)
 
     class Meta:
         model = Borrow
@@ -26,12 +28,14 @@ class BorrowListSerializer(serializers.ModelSerializer):
             "book",
             "user",
             "is_active",
+            "payments",
         )
 
 
 class BorrowRetrieveSerializer(serializers.ModelSerializer):
     book = BookSerializer(read_only=True)
     user = UserSerializer(read_only=True)
+    payments = PaymentListSerializer(read_only=True, many=True)
 
     class Meta:
         model = Borrow
@@ -43,6 +47,7 @@ class BorrowRetrieveSerializer(serializers.ModelSerializer):
             "book",
             "user",
             "is_active",
+            "payments",
         )
 
 
