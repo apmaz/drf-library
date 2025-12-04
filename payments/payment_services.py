@@ -26,7 +26,9 @@ def create_checkout_session(instance: Borrow, request) -> str:
         ],
         mode="payment",
         success_url=request.build_absolute_uri(reverse("payment:success"))
-        + "?session_id={CHECKOUT_SESSION_ID}",
+                    + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse("payment:cancel"))
+                   + "?session_id={CHECKOUT_SESSION_ID}",
     )
 
     Payment.objects.create(
@@ -51,3 +53,10 @@ def success(request):
     session = stripe.checkout.Session.retrieve(session_id)
     customer = session.customer
     return render(request, "success.html", {"customer": customer})
+
+
+def cancel(request):
+    session_id = request.GET.get("session_id")
+    session = stripe.checkout.Session.retrieve(session_id)
+    customer = session.customer
+    return render(request, "cancel.html", {"customer": customer})
