@@ -76,9 +76,10 @@ class BorrowSerializer(serializers.ModelSerializer):
         book = validated_data["book"]
         book.decrease_on_1_for_inventory()
         with transaction.atomic():
+            request = self.context.get("request")
             instance = Borrow.objects.create(**validated_data)
             send_borrow_created_message(instance)
-            create_checkout_session(instance)
+            create_checkout_session(instance, request)
         return instance
 
 
