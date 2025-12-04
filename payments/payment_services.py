@@ -1,5 +1,6 @@
 import os
 import stripe
+from django.shortcuts import render
 from borrow.models import Borrow
 from payments.models import Payment
 
@@ -40,3 +41,10 @@ def total_amount(instance: Borrow):
     count_days = delta.days
     sum_for_pay = instance.book.daily_fee * count_days
     return int(sum_for_pay)
+
+
+def success(request):
+    session_id = request.GET.get("session_id")
+    session = stripe.checkout.Session.retrieve(session_id)
+    customer = session.customer
+    return render(request, "success.html", {"customer": customer})
