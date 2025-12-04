@@ -26,9 +26,9 @@ def create_checkout_session(instance: Borrow, request) -> str:
         ],
         mode="payment",
         success_url=request.build_absolute_uri(reverse("payment:success"))
-                    + "?session_id={CHECKOUT_SESSION_ID}",
+        + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=request.build_absolute_uri(reverse("payment:cancel"))
-                   + "?session_id={CHECKOUT_SESSION_ID}",
+        + "?session_id={CHECKOUT_SESSION_ID}",
     )
 
     Payment.objects.create(
@@ -38,7 +38,7 @@ def create_checkout_session(instance: Borrow, request) -> str:
         money_to_pay=sum_to_pay,
     )
 
-    return checkout_session.url
+    print(checkout_session.url)
 
 
 def total_amount(instance: Borrow):
@@ -52,6 +52,7 @@ def success(request):
     session_id = request.GET.get("session_id")
     session = stripe.checkout.Session.retrieve(session_id)
     customer = session.customer
+    set_status_paid(session_id)
     return render(request, "success.html", {"customer": customer})
 
 
@@ -60,3 +61,7 @@ def cancel(request):
     session = stripe.checkout.Session.retrieve(session_id)
     customer = session.customer
     return render(request, "cancel.html", {"customer": customer})
+
+
+def set_status_paid(session_id: str):
+    Payment.objects.filter(session_id=session_id).update(status="paid")
