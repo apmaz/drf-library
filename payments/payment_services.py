@@ -1,11 +1,13 @@
 import os
 import stripe
 from django.shortcuts import render
+from django.urls import reverse
+
 from borrow.models import Borrow
 from payments.models import Payment
 
 
-def create_checkout_session(instance: Borrow) -> str:
+def create_checkout_session(instance: Borrow, request) -> str:
     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
     sum_to_pay = total_amount(instance)
 
@@ -23,7 +25,8 @@ def create_checkout_session(instance: Borrow) -> str:
             }
         ],
         mode="payment",
-        success_url="http://localhost:4242/success",
+        success_url=request.build_absolute_uri(reverse("payment:success"))
+        + "?session_id={CHECKOUT_SESSION_ID}",
     )
 
     Payment.objects.create(
