@@ -1,5 +1,6 @@
 import os
 from decimal import Decimal
+from typing import Callable
 
 import stripe
 from django.http import HttpResponse, HttpRequest
@@ -10,9 +11,15 @@ from borrow.models import Borrow
 from payments.models import Payment
 
 
-def create_checkout_session(instance: Borrow, request: HttpRequest) -> str:
+def create_checkout_session(
+    instance: Borrow,
+    request: HttpRequest,
+    type_of_payment: str,
+    amount_to_pay: Callable[[Borrow], decimal],
+) -> str:
+
     stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-    sum_to_pay = total_amount(instance)
+    amount_to_pay = amount_to_pay(instance)
 
     checkout_session = stripe.checkout.Session.create(
         line_items=[
@@ -22,11 +29,12 @@ def create_checkout_session(instance: Borrow, request: HttpRequest) -> str:
                     "product_data": {
                         "name": f"{instance.book.title} by {instance.book.author}",
                     },
-                    "unit_amount": sum_to_pay * 100,
+                    "unit_amount": amount_to_pay * 100,
                 },
                 "quantity": 1,
             }
         ],
+        metadata={"type_of_payment": type_of_payment},
         mode="payment",
         success_url=request.build_absolute_uri(reverse("payment:success"))
         + "?session_id={CHECKOUT_SESSION_ID}",
@@ -35,7 +43,7 @@ def create_checkout_session(instance: Borrow, request: HttpRequest) -> str:
     )
 
     create_payment(
-        instance=instance, strip_session=checkout_session, sum_to_pay=sum_to_pay
+        instance=instance, strip_session=checkout_session, amount_to_pay=amount_to_pay
     )
 
     return checkout_session.url
@@ -70,11 +78,11 @@ def set_status_paid(session_id: str) -> None:
 def create_payment(
     instance: Borrow,
     strip_session: stripe.checkout.Session,
-    sum_to_pay: Decimal,
+    amount_to_pay: Decimal,
 ) -> None:
     Payment.objects.create(
         borrowing=instance,
         session_url=strip_session.url,
         session_id=strip_session.id,
-        money_to_pay=sum_to_pay,
+        money_to_pay=amount_to_pay,
     )
