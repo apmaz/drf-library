@@ -1,3 +1,4 @@
+import decimal
 import os
 from decimal import Decimal
 from typing import Callable
@@ -60,7 +61,11 @@ def success(request: HttpRequest) -> HttpResponse:
     session_id = request.GET.get("session_id")
     session = stripe.checkout.Session.retrieve(session_id)
     customer = session.customer
-    set_status_paid(session_id)
+    type_of_payment = session["metadata"].get("type_of_payment")
+    if type_of_payment == "pending":
+        set_status_paid(session_id)
+    elif type_of_payment == "fine":
+        set_type_fine(session_id)
     return render(request, "success.html", {"customer": customer})
 
 
@@ -72,7 +77,10 @@ def cancel(request: HttpRequest) -> HttpResponse:
 
 
 def set_status_paid(session_id: str) -> None:
-    Payment.objects.filter(session_id=session_id).update(status="paid")
+    payment = Payment.objects.get(session_id=session_id)
+    payment.status = "paid"
+    payment.type = "payment"
+    payment.save()
 
 
 def create_payment(
@@ -86,3 +94,18 @@ def create_payment(
         session_id=strip_session.id,
         money_to_pay=amount_to_pay,
     )
+
+
+def calculate_fine_amount(instance: Borrow) -> int:
+    fine_multiplier = 2
+    delta = instance.actual_return_date - instance.expected_return_date
+    count_days = delta.days
+    sum_for_pay = instance.book.daily_fee * count_days * fine_multiplier
+    return int(sum_for_pay)
+
+
+def set_type_fine(session_id: str) -> None:
+    payment = Payment.objects.get(session_id=session_id)
+    payment.status = "paid"
+    payment.type = "fine"
+    payment.save()
