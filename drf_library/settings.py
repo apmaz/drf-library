@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "borrow",
     "notifications",
     "payments",
+    "django_q",
 ]
 
 AUTH_USER_MODEL = "user.User"
@@ -146,9 +147,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.AllowAny",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
 SIMPLE_JWT = {
@@ -156,4 +155,20 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
     "ROTATE_REFRESH_TOKENS": False,
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZE",
+}
+
+Q_CLUSTER = {
+    "name": "drf_library",
+    "workers": 4,
+    "recycle": 100,
+    "timeout": 60,
+    "compress": True,
+    "save_limit": 10,
+    "queue_limit": 500,
+    "label": "Django Q",
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "db": 0,
+    },
 }
