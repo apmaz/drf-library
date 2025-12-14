@@ -120,8 +120,17 @@ class BorrowReturnSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 {"This borrow": "Is unactive. You can't return this borrow twice"}
             )
-        instance.is_active = False
-        instance.actual_return_date = datetime.now().date()
-        instance.book.increase_on_1_for_inventory()
-        instance.save()
+        with transaction.atomic():
+            instance.is_active = False
+            instance.actual_return_date = datetime.now().date()
+            instance.book.increase_on_1_for_inventory()
+            instance.save()
+        if instance.expected_return_date < instance.actual_return_date:
+            request = self.context.get("request")
+            create_checkout_session(
+                instance,
+                request,
+                type_of_payment="fine",
+                amount_to_pay=calculate_fine_amount,
+            )
         return instance
