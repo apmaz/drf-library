@@ -5,7 +5,11 @@ from rest_framework.exceptions import ValidationError
 from borrow.models import Borrow
 from book.serializers import BookSerializer
 from notifications.telegram_services import send_borrow_created_message
-from payments.payment_services import create_checkout_session
+from payments.payment_services import (
+    create_checkout_session,
+    total_amount,
+    calculate_fine_amount,
+)
 from user.serializers import UserSerializer
 from payments.serializers import PaymentListSerializer, PaymentShortSerializer
 
@@ -74,12 +78,14 @@ class BorrowSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         book = validated_data["book"]
-        book.decrease_on_1_for_inventory()
+        request = self.context.get("request")
         with transaction.atomic():
-            request = self.context.get("request")
+            book.decrease_on_1_for_inventory()
             instance = Borrow.objects.create(**validated_data)
-            send_borrow_created_message(instance)
-            create_checkout_session(instance, request)
+        send_borrow_created_message(instance)
+        create_checkout_session(
+            instance, request, type_of_payment="pending", amount_to_pay=total_amount
+        )
         return instance
 
 
