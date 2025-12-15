@@ -115,7 +115,7 @@ class BorrowReturnSerializer(serializers.ModelSerializer):
             "is_active",
         )
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Borrow, validated_data):
         if not instance.is_active:
             raise ValidationError(
                 {"This borrow": "Is unactive. You can't return this borrow twice"}
