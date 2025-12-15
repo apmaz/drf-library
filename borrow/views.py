@@ -25,7 +25,7 @@ class BorrowViewSet(
     @staticmethod
     def _params_to_ints(query_string):
         try:
-            return [int(str_id) for str_id in query_string.split(',')]
+            return [int(str_id) for str_id in query_string.split(",")]
         except ValueError:
             raise ValidationError(
                 {
@@ -36,7 +36,10 @@ class BorrowViewSet(
     @staticmethod
     def _params_to_bools(query_string):
         query_string = query_string.lower().strip()
-        if query_string not in ("true", "false",):
+        if query_string not in (
+            "true",
+            "false",
+        ):
             raise ValidationError(
                 {
                     "is_active": "Must be 'true' or 'false' (ex. is_active=true or false)",
@@ -47,12 +50,17 @@ class BorrowViewSet(
         return False
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related("book", "user")
+            .prefetch_related("payments")
+        )
 
         user_id = self.request.query_params.get("user_id")
         is_active = self.request.query_params.get("is_active")
 
-        if self.action =="list":
+        if self.action == "list":
             if not self.request.user.is_staff:
                 queryset = queryset.filter(user=self.request.user)
                 if is_active:
@@ -83,9 +91,11 @@ class BorrowViewSet(
         serializer.save(user=self.request.user)
 
     @action(
-        methods=["POST",],
+        methods=[
+            "POST",
+        ],
         detail=True,
-        url_path="return"
+        url_path="return",
     )
     def return_of_borrow(self, request, pk=None):
         borrow = self.get_object()
