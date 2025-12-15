@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "notifications",
     "payments",
     "django_q",
+    "drf_spectacular",
 ]
 
 AUTH_USER_MODEL = "user.User"
@@ -148,7 +149,9 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
@@ -170,5 +173,19 @@ Q_CLUSTER = {
         "host": "127.0.0.1",
         "port": 6379,
         "db": 0,
+    },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "DRF Library API",
+    "DESCRIPTION": "Project intended for managing library borrow",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "defaultModelRendering": "model",
+        "defaultModelsExpandDepth": 2,
+        "defaultModelExpandDepth": 2,
     },
 }
