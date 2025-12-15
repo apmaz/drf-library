@@ -12,7 +12,7 @@ class Payment(models.Model):
         FINE = "fine"
 
     status = models.CharField(
-        choices=StatusChoices.choices, default=None, null=True, blank=True
+        choices=StatusChoices.choices, default=StatusChoices.PENDING
     )
     type = models.CharField(
         choices=TypeChoices.choices, default=None, null=True, blank=True
