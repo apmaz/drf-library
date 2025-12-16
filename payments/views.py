@@ -36,6 +36,11 @@ class PaymentViewSet(
         return PaymentRetrieveSerializer
 
 
+@extend_schema(
+    summary="Stripe success redirect",
+    description="Success page Stripe payment",
+    responses={200: None},
+)
 @api_view(["GET"])
 def success(request: HttpRequest) -> HttpResponse:
     session_id = request.GET.get("session_id")
@@ -49,6 +54,11 @@ def success(request: HttpRequest) -> HttpResponse:
     return render(request, "success.html", {"customer": customer})
 
 
+@extend_schema(
+    summary="Stripe cancel redirect",
+    description="Cancel page Stripe payment",
+    responses={200: None},
+)
 @api_view(["GET"])
 def cancel(request: HttpRequest) -> HttpResponse:
     session_id = request.GET.get("session_id")
