@@ -4,8 +4,7 @@ from decimal import Decimal
 from typing import Callable
 
 import stripe
-from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
+from django.http import HttpRequest
 from django.urls import reverse
 
 from borrow.models import Borrow
@@ -55,25 +54,6 @@ def total_amount(instance: Borrow) -> int:
     count_days = delta.days
     sum_for_pay = instance.book.daily_fee * count_days
     return int(sum_for_pay)
-
-
-def success(request: HttpRequest) -> HttpResponse:
-    session_id = request.GET.get("session_id")
-    session = stripe.checkout.Session.retrieve(session_id)
-    customer = session.customer
-    type_of_payment = session["metadata"].get("type_of_payment")
-    if type_of_payment == "pending":
-        set_status_paid(session_id)
-    elif type_of_payment == "fine":
-        set_type_fine(session_id)
-    return render(request, "success.html", {"customer": customer})
-
-
-def cancel(request: HttpRequest) -> HttpResponse:
-    session_id = request.GET.get("session_id")
-    session = stripe.checkout.Session.retrieve(session_id)
-    customer = session.customer
-    return render(request, "cancel.html", {"customer": customer})
 
 
 def set_status_paid(session_id: str) -> None:
