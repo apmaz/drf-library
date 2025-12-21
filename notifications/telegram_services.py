@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 from borrow.models import Borrow
 
 
-def send_borrow_created_message(instance: Borrow) -> None:
-    load_dotenv()
-    bot_token = os.getenv("BOT_TOKEN")
+load_dotenv()
 
+
+def send_borrow_created_message(instance: Borrow) -> None:
+    bot_token = os.getenv("BOT_TOKEN")
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
 
     payload = {
@@ -39,9 +40,7 @@ def send_borrow_created_message(instance: Borrow) -> None:
 
 
 def send_borrow_overdue_message(instance: Borrow) -> None:
-    load_dotenv()
     bot_token = os.getenv("BOT_TOKEN")
-
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
 
     payload = {
@@ -49,6 +48,7 @@ def send_borrow_overdue_message(instance: Borrow) -> None:
         f"- Borrow ID: {instance.id},\n"
         f"- Borrow create date: {instance.borrow_date},\n"
         f"- Expected return date: {instance.expected_return_date},\n\n"
+        f"- Actual return date: {instance.actual_return_date},\n\n"
         f"- Book ID: {instance.book.id},\n"
         f"- Book title: {instance.book.title},\n"
         f"- Book author: {instance.book.author},\n\n"
@@ -73,9 +73,7 @@ def send_borrow_overdue_message(instance: Borrow) -> None:
 
 
 def send_borrow_not_overdue_message() -> None:
-    load_dotenv()
     bot_token = os.getenv("BOT_TOKEN")
-
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
 
     payload = {
