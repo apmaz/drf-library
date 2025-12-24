@@ -1,0 +1,57 @@
+services:
+    drf_library:
+        build:
+          context: .
+        command: >
+          sh -c "
+            python manage.py wait_for_db &&
+            python manage.py migrate &&
+            python manage.py checking_overdue_borrows_task &&
+            python manage.py runserver 0.0.0.0:8000
+          "
+        ports:
+          - "8000:8000"
+        volumes:
+          - ./:/app
+        env_file:
+          - .env
+        depends_on:
+          - drf_library_db
+
+    drf_library_qcluster:
+        build:
+          context: .
+        command: >
+          sh -c "
+            python manage.py wait_for_db &&
+            python manage.py qcluster
+          "
+        env_file:
+          - .env
+        depends_on:
+          - drf_library_db
+
+    drf_library_db:
+        image: postgres:16.0-alpine3.17
+        restart: always
+        ports:
+          - "5432:5432"
+        volumes:
+          - my_drf_library_db:$PGDATA
+        env_file:
+          - .env
+
+    redis:
+        image: redis:8-alpine
+        restart: always
+        ports:
+          - "6379:6379"
+        env_file:
+          - .env
+        depends_on:
+          - drf_library_db
+          - drf_library_qcluster
+
+volumes:
+  drf_library:
+  my_drf_library_db:
