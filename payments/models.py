@@ -12,16 +12,16 @@ class Payment(models.Model):
         FINE = "fine"
 
     status = models.CharField(
-        choices=StatusChoices.choices, default=StatusChoices.PENDING
+        choices=StatusChoices.choices, default=StatusChoices.PENDING, max_length=20
     )
     type = models.CharField(
-        choices=TypeChoices.choices, default=None, null=True, blank=True
+        choices=TypeChoices.choices, default=None, null=True, blank=True, max_length=20
     )
     borrowing = models.ForeignKey(
         Borrow, on_delete=models.CASCADE, related_name="payments"
     )
-    session_url = models.URLField(max_length=255, null=True, blank=True)
-    session_id = models.CharField(max_length=255, null=True, blank=True)
+    session_url = models.TextField(null=True, blank=True)
+    session_id = models.TextField(null=True, blank=True)
     money_to_pay = models.DecimalField(max_digits=6, decimal_places=3)
 
     def __str__(self):
