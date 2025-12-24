@@ -125,7 +125,7 @@ class UnauthenticatedBorrowApiTest(BaseBorrowAPITest):
         url = get_borrow_url(self.borrow_1)
 
         res = self.client.delete(url)
-        self.assertTrue(Book.objects.filter(pk=self.borrow_1.id).exists())
+        self.assertTrue(Borrow.objects.filter(pk=self.borrow_1.id).exists())
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -185,7 +185,7 @@ class AuthenticatedBorrowApiTest(BaseBorrowAPITest):
         url = get_borrow_url(self.borrow_1)
 
         res = self.client.delete(url)
-        self.assertTrue(Book.objects.filter(pk=self.borrow_1.id).exists())
+        self.assertTrue(Borrow.objects.filter(pk=self.borrow_1.id).exists())
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
@@ -245,7 +245,7 @@ class AdminBorrowApiTest(BaseBorrowAPITest):
         url = get_borrow_url(self.borrow_1)
 
         res = self.client.delete(url)
-        self.assertTrue(Book.objects.filter(pk=self.borrow_1.id).exists())
+        self.assertTrue(Borrow.objects.filter(pk=self.borrow_1.id).exists())
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_search_filter_borrow_by_user_id_returns_200(self):
