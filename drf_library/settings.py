@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "borrow",
     "notifications",
     "payments",
+    "common",
     "django_q",
     "drf_spectacular",
 ]
