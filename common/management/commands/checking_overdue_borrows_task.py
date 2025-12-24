@@ -6,7 +6,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         schedule, created = Schedule.objects.get_or_create(
             func="borrow.borrow_services.checking_overdue_borrows",
-            schedule_type=Schedule.MINUTES,
+            schedule_type=Schedule.DAILY,
             repeats=-1,
         )
         if created:
