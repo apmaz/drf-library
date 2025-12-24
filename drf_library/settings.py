@@ -170,8 +170,8 @@ Q_CLUSTER = {
     "queue_limit": 500,
     "label": "Django Q",
     "redis": {
-        "host": "127.0.0.1",
-        "port": 6379,
+        "host": os.getenv("REDIS_HOST", "localhost"),
+        "port": int(os.getenv("REDIS_PORT", 6379)),
         "db": 0,
     },
 }
